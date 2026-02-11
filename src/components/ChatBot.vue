@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-8 right-8 z-[100] font-sans flex flex-col items-end">
+  <div class="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[100] font-sans flex flex-col items-end max-w-[calc(100vw-2rem)]">
     <!-- Chat Window -->
     <Transition
       enter-active-class="transition duration-300 ease-out"
@@ -9,12 +9,12 @@
       leave-from-class="transform translate-y-0 opacity-100 scale-100"
       leave-to-class="transform translate-y-10 opacity-0 scale-95"
     >
-      <div v-if="isOpen" class="mb-4 w-[380px] h-[550px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-100">
+      <div v-if="isOpen" class="mb-4 w-[calc(100vw-2rem)] sm:w-[380px] h-[70vh] sm:h-[550px] max-h-[calc(100vh-120px)] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-100 transition-all duration-300">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-[#164a9a] to-[#1e5bb8] p-5 flex items-center justify-between text-white shrink-0">
+        <div class="bg-gradient-to-r from-[#164a9a] to-[#1e5bb8] p-4 sm:p-5 flex items-center justify-between text-white shrink-0">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30">
-              <i class="fa-solid fa-robot text-xl"></i>
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-white/10 shadow-sm">
+              <img :src="robotIcon" alt="Assistant" class="w-8 h-8 object-contain " />
             </div>
             <div>
               <h3 class="font-bold text-base leading-tight">Embassy Assistant</h3>
@@ -30,7 +30,7 @@
         </div>
 
         <!-- Messages area -->
-        <div ref="chatContainer" class="flex-grow overflow-y-auto p-5 bg-[#f8f9fa] space-y-4">
+        <div ref="chatContainer" class="flex-grow overflow-y-auto p-4 sm:p-5 bg-[#f8f9fa] space-y-4">
           <div v-for="(msg, idx) in messages" :key="idx"
                class="flex flex-col"
                :class="msg.isUser ? 'items-end' : 'items-start'">
@@ -57,7 +57,7 @@
         </div>
 
         <!-- Input area -->
-        <div class="p-4 bg-white border-t border-gray-100">
+        <div class="p-3 sm:p-4 bg-white border-t border-gray-100">
           <form @submit.prevent="sendMessage" class="flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200 focus-within:border-[#164a9a] transition-all">
             <input
               v-model="message"
@@ -88,7 +88,7 @@
       <i :class="isOpen ? 'fa-solid fa-chevron-down text-xl' : 'fa-solid fa-message text-2xl group-hover:rotate-12 transition-transform'"></i>
 
       <!-- Tooltip -->
-      <div v-if="!isOpen" class="absolute right-20 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+      <div v-if="!isOpen" class="absolute right-20 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg hidden sm:block">
         Chat with us!
         <div class="absolute right-[-4px] top-1/2 -translate-y-1/2 border-l-4 border-l-gray-900 border-y-4 border-y-transparent"></div>
       </div>
@@ -99,6 +99,7 @@
 <script setup lang="ts">
 import { ref, nextTick, inject, watch, type Ref } from 'vue'
 import { marked } from 'marked'
+import robotIcon from '@/assets/robot_18355220-Photoroom-Photoroom.svg'
 
 const isOpen = ref(false)
 const message = ref('')
