@@ -35,13 +35,12 @@
                class="flex flex-col"
                :class="msg.isUser ? 'items-end' : 'items-start'">
             <div :class="[
-              'max-w-[85%] px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm markdown-content',
-              msg.isUser ? 'bg-[#164a9a] text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100',
+              'max-w-[92%] px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm markdown-content overflow-x-auto',
+              msg.isUser ? 'bg-[#164a9a] text-white rounded-tr-none user-markdown' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100',
               msg.isRejection ? 'border-red-200 bg-red-50/30' : ''
             ]">
               <i v-if="msg.isRejection" class="fa-solid fa-circle-exclamation text-red-400 mr-2 text-[10px]"></i>
-              <div v-if="!msg.isUser" v-html="renderMarkdown(msg.text)"></div>
-              <div v-else>{{ msg.text }}</div>
+              <div v-html="renderMarkdown(msg.text)"></div>
             </div>
             <span class="text-[10px] text-gray-400 mt-1 font-medium">{{ msg.time }}</span>
           </div>
@@ -168,21 +167,40 @@ const sendMessage = async () => {
 
     const data = await response.json()
 
+    // Stop loading spinner before typing starts
+    isLoading.value = false
+
+    // Initialize empty bot message
     messages.value.push({
-      text: data.botResponse,
+      text: '',
       isUser: false,
       isRejection: data.isRejection,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     })
+
+    const msgIndex = messages.value.length - 1
+    const fullText = data.botResponse || ""
+    let i = 0
+
+    // Typewriter effect
+    const typeInterval = setInterval(() => {
+      if (i < fullText.length) {
+        messages.value[msgIndex].text += fullText.charAt(i)
+        i++
+        // Scroll is handled by the watcher on 'messages'
+      } else {
+        clearInterval(typeInterval)
+      }
+    }, 20) // Adjust speed (lower = faster)
+
   } catch (error) {
     console.error('ChatBot: API Error -', error)
+    isLoading.value = false
     messages.value.push({
       text: "I'm having trouble connecting to the server. Please check your connection or refresh the page.",
       isUser: false,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     })
-  } finally {
-    isLoading.value = false
   }
 }
 
@@ -219,29 +237,156 @@ watch([messages, isLoading], () => {
 }
 
 .markdown-content :deep(p) {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
 }
 .markdown-content :deep(p:last-child) {
   margin-bottom: 0;
 }
-.markdown-content :deep(ul), .markdown-content :deep(ol) {
+
+.markdown-content :deep(h1),
+.markdown-content :deep(h2),
+.markdown-content :deep(h3) {
+  margin-top: 1rem;
   margin-bottom: 0.5rem;
-  padding-left: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+  line-height: 1.3;
 }
+
+.markdown-content :deep(h1) { font-size: 1.25rem; }
+.markdown-content :deep(h2) { font-size: 1.15rem; }
+.markdown-content :deep(h3) { font-size: 1.05rem; }
+
+.markdown-content :deep(ul), .markdown-content :deep(ol) {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
 .markdown-content :deep(ul) {
   list-style-type: disc;
 }
 .markdown-content :deep(ol) {
   list-style-type: decimal;
 }
+
 .markdown-content :deep(li) {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
 }
+
+.markdown-content :deep(code) {
+  background-color: #f1f5f9;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  color: #e53e3e;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #1e293b;
+  color: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+}
+
+.markdown-content :deep(pre code) {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: 0.85em;
+}
+
+.markdown-content :deep(blockquote) {
+  border-left: 4px solid #cbd5e1;
+  padding-left: 1rem;
+  margin: 0.75rem 0;
+  color: #64748b;
+  font-style: italic;
+}
+
+.markdown-content :deep(hr) {
+  margin: 1rem 0;
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+}
+
 .markdown-content :deep(strong) {
   font-weight: 700;
+  color: #0f172a;
 }
 .markdown-content :deep(a) {
   color: #164a9a;
   text-decoration: underline;
+}
+
+.user-markdown {
+  color: white !important;
+}
+
+.user-markdown :deep(*) {
+  color: white !important;
+}
+
+.user-markdown :deep(code) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+}
+
+.user-markdown :deep(a) {
+  color: #fbbf24 !important;
+}
+
+.markdown-content::-webkit-scrollbar {
+  height: 4px;
+}
+.markdown-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.markdown-content::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+.markdown-content :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 13px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #eef2f6;
+}
+
+.markdown-content :deep(th),
+.markdown-content :deep(td) {
+  border: 1px solid #eef2f6;
+  padding: 8px 12px;
+  text-align: left;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.markdown-content :deep(th:first-child),
+.markdown-content :deep(td:first-child) {
+  width: 60px;
+  text-align: center;
+}
+
+.markdown-content :deep(th) {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.markdown-content :deep(tr:nth-child(even)) {
+  background-color: #fcfdfe;
+}
+
+.markdown-content :deep(tr:hover) {
+  background-color: #f8fafc;
 }
 </style>

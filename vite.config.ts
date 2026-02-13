@@ -18,8 +18,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://indian-embassy-poc.hkhnatdxbva4bhcn.southindia.azurecontainer.io:8000',
+        target: 'https://indian-embassy-poc-hkhnatdxbva4bhcn.southindia-01.azurewebsites.net',
         changeOrigin: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }

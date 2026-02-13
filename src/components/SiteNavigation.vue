@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-[#164a9a] text-white sticky top-0 z-50">
+  <nav class="bg-[#164a9a] text-white">
     <div class="max-w-7xl mx-auto px-6">
       <!-- Mobile Menu Button -->
       <button

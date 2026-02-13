@@ -1,7 +1,7 @@
 <template>
   <header class="bg-white py-0 my-0">
     <!-- Demo Disclaimer Banner -->
-    <div class="bg-blue-900 text-white text-[14px] py-2.5 text-center font-bold tracking-tight px-6 leading-normal">
+    <div class="bg-blue-900 text-white text-md py-2.5 text-center font-bold tracking-tight px-6 leading-normal">
       <i class="fa-solid fa-circle-info mr-2 opacity-90"></i>
       This is not the official website of the Indian Embassy in the Hague in the Netherlands. This is a mockup of the website for demonstrating an AI powered chatbot for answering FAQs. © Ariqt Global Technologies, 2026
     </div>

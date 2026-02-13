@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen flex flex-col bg-white">
-    <SiteHeader />
-    <SiteNavigation />
+    <div class="sticky top-0 z-50 w-full shadow-md">
+      <SiteHeader />
+      <SiteNavigation />
+    </div>
     <main class="flex-grow">
       <router-view />
     </main>
