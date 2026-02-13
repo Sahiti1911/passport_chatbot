@@ -27,6 +27,9 @@ export const partnerLinks = [
   { name: 'Film in India', url: 'https://ffo.gov.in/', logo: filmInIndiaImg },
   { name: 'Prabhass', url: 'https://www.prabhass.gov.in/', logo: prabhassImg },
   { name: 'Dekho Apna Desh', url: 'https://innovateindia.mygov.in/dekho-apna-desh/', logo: dekhoImg },
+]
+
+export const otherPartnerLinks = [
   { name: 'EEPC India', url: 'https://www.eepcindia.org/', logo: eepcImg },
   { name: 'Voters Service Portal', url: 'https://voters.eci.gov.in/', logo: voterImg },
   { name: 'IBEF', url: 'https://www.ibef.org/', logo: ibefImg },

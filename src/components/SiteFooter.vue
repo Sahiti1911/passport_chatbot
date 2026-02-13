@@ -41,7 +41,7 @@
         <h3 class="text-white font-semibold mb-4">Partner Organizations</h3>
         <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
           <a
-            v-for="(partner, index) in partnerLinks"
+            v-for="(partner, index) in otherPartnerLinks"
             :key="index"
             :href="partner.url"
             target="_blank"
@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { partnerLinks } from '../data/partners'
+import { otherPartnerLinks } from '../data/partners'
 </script>
 
 <style scoped>
