@@ -30,7 +30,7 @@
         </div>
 
         <!-- Messages area -->
-        <div ref="chatContainer" class="flex-grow overflow-y-auto p-4 sm:p-5 bg-[#f8f9fa] space-y-4">
+        <div ref="chatContainer" @scroll="handleScroll" class="flex-grow overflow-y-auto p-4 sm:p-5 bg-[#f8f9fa] space-y-4">
           <div v-for="(msg, idx) in messages" :key="idx"
                class="flex flex-col"
                :class="msg.isUser ? 'items-end' : 'items-start'">
@@ -123,11 +123,13 @@ const messages = ref<Message[]>([
 
 const API_BASE = '/api'
 
+const userScrolledUp = ref(false)
+
 const toggleChat = () => {
   isOpen.value = !isOpen.value
   if (isOpen.value) {
     nextTick(() => {
-      scrollToBottom()
+      scrollToBottom(true)
     })
   }
 }
@@ -144,6 +146,9 @@ const sendMessage = async () => {
     isUser: true,
     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   })
+
+  // Force scroll when user sends message
+  nextTick(() => scrollToBottom(true))
 
   isLoading.value = true
 
@@ -178,8 +183,11 @@ const sendMessage = async () => {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     })
 
+    nextTick(() => scrollToBottom(true))
+
     const msgIndex = messages.value.length - 1
     const fullText = data.botResponse || ""
+
     let i = 0
 
     // Typewriter effect
@@ -187,7 +195,6 @@ const sendMessage = async () => {
       if (i < fullText.length) {
         messages.value[msgIndex].text += fullText.charAt(i)
         i++
-        // Scroll is handled by the watcher on 'messages'
       } else {
         clearInterval(typeInterval)
       }
@@ -201,15 +208,28 @@ const sendMessage = async () => {
       isUser: false,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     })
+    nextTick(() => scrollToBottom(true))
   }
 }
 
-const scrollToBottom = () => {
+const handleScroll = () => {
+  if (!chatContainer.value) return
+  const { scrollTop, scrollHeight, clientHeight } = chatContainer.value
+  const isAtBottom = scrollHeight - scrollTop - clientHeight < 10
+  userScrolledUp.value = !isAtBottom
+}
+
+const scrollToBottom = (force = false) => {
   if (chatContainer.value) {
-    chatContainer.value.scrollTo({
-      top: chatContainer.value.scrollHeight,
-      behavior: 'smooth'
-    })
+    if (force || !userScrolledUp.value) {
+      chatContainer.value.scrollTo({
+        top: chatContainer.value.scrollHeight,
+        behavior: 'auto'
+      })
+      if (force) {
+        userScrolledUp.value = false
+      }
+    }
   }
 }
 
@@ -351,13 +371,15 @@ watch([messages, isLoading], () => {
 }
 
 .markdown-content :deep(table) {
+  display: block;
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-collapse: collapse;
   margin: 10px 0;
   font-size: 13px;
   background: white;
   border-radius: 8px;
-  overflow: hidden;
   border: 1px solid #eef2f6;
 }
 
@@ -367,7 +389,7 @@ watch([messages, isLoading], () => {
   padding: 8px 12px;
   text-align: left;
   line-height: 1.5;
-  word-break: break-word;
+  min-width: 120px;
 }
 
 .markdown-content :deep(th:first-child),
